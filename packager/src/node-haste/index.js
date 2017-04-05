@@ -235,6 +235,7 @@ class DependencyGraph extends EventEmitter {
       const req = new ResolutionRequest({
         dirExists,
         entryPath: absPath,
+        roots: this._opts.roots,
         extraNodeModules: this._opts.extraNodeModules,
         hasteFS: this._hasteFS,
         hasteMap: this._hasteMap,

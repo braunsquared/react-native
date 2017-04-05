@@ -32,6 +32,7 @@ type DirExistsFn = (filePath: string) => boolean;
 type Options = {
   dirExists: DirExistsFn,
   entryPath: string,
+  roots: Set<string>,
   extraNodeModules: ?Object,
   hasteFS: HasteFS,
   hasteMap: HasteMap,
@@ -46,6 +47,7 @@ type Options = {
 class ResolutionRequest {
   _dirExists: DirExistsFn;
   _entryPath: string;
+  _roots: Set<string>;
   _extraNodeModules: ?Object;
   _hasteFS: HasteFS;
   _hasteMap: HasteMap;
@@ -60,6 +62,7 @@ class ResolutionRequest {
   constructor({
     dirExists,
     entryPath,
+    roots,
     extraNodeModules,
     hasteFS,
     hasteMap,
@@ -71,6 +74,7 @@ class ResolutionRequest {
   }: Options) {
     this._dirExists = dirExists;
     this._entryPath = entryPath;
+    this._roots = roots;
     this._extraNodeModules = extraNodeModules;
     this._hasteFS = hasteFS;
     this._hasteMap = hasteMap;
@@ -336,6 +340,13 @@ class ResolutionRequest {
               );
             }
           }
+
+          this._roots.forEach(rootPath => {
+            const rootPathModule = path.join(rootPath, 'node_modules', realModuleName);
+            if(searchQueue.indexOf(rootPathModule) == -1) {
+              searchQueue.push(rootPathModule);
+            }
+          });
 
           if (this._extraNodeModules) {
             const {_extraNodeModules} = this;
